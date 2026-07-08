@@ -3,8 +3,6 @@ import random
 from datetime import datetime
 from game_logic import Deck, Player, RummyGame
 from utils import display_playing_card, display_card_back, display_player_info, apply_custom_css
-import firebase_admin
-from firebase_admin import credentials, auth, firestore
 import os
 from dotenv import load_dotenv
 
@@ -20,25 +18,17 @@ if 'games' not in st.session_state:
 if 'current_game_id' not in st.session_state:
     st.session_state.current_game_id = None
 
-# Initialize Firebase
+# Initialize Firebase (optional for demo mode)
+FIREBASE_ENABLED = False
+db = None
 try:
+    import firebase_admin
+    from firebase_admin import credentials, auth, firestore
     firebase_admin.get_app()
-except ValueError:
-    firebase_config = {
-        "apiKey": os.getenv("FIREBASE_API_KEY"),
-        "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
-        "projectId": os.getenv("FIREBASE_PROJECT_ID"),
-        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
-        "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
-        "appId": os.getenv("FIREBASE_APP_ID")
-    }
-    cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": firebase_config["projectId"],
-    })
-    firebase_admin.initialize_app(cred)
-
-db = firestore.client()
+    db = firestore.client()
+    FIREBASE_ENABLED = True
+except:
+    pass
 
 # Page styling
 st.set_page_config(
