@@ -98,7 +98,8 @@ def login_page():
     
     with st.form("login_form"):
         username = st.text_input("Choose a display name:", placeholder="Player 1")
-        submit = st.form_submit_with_button("Enter Casino Lobby")
+        # Fixed the structural bug here
+        submit = st.form_submit_button("Enter Casino Lobby")
         if submit and username:
             st.session_state.user = {
                 "uid": f"usr_{random.randint(1000,9999)}",
@@ -274,7 +275,7 @@ def main():
     if st.session_state.page == "login":
         login_page()
     elif st.session_state.page == "lobby":
-        dashboard_page() if hasattr(st, "dashboard_page") else lobby_page()
+        lobby_page()
     elif st.session_state.page == "game":
         game_page()
 
