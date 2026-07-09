@@ -48,110 +48,140 @@ def login_page():
             justify-content: center;
             min-height: 100vh;
         }
+        .login-card {
+            background: white;
+            border: 4px solid #ff6b35;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
         .title {
-            font-size: 4rem;
+            font-size: 3rem;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            color: #0a4f0a;
         }
         .subtitle {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             text-align: center;
-            color: #9ca3af;
+            color: #666;
             margin-bottom: 2rem;
+        }
+        .demo-note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #664d03;
+            margin-top: 20px;
         }
     </style>
     """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 1, 1])
     with col2:
-        st.markdown('<div class="title">🎴 Rummy</div>', unsafe_allow_html=True)
-        st.markdown('<div class="subtitle">Play with Friends. Earn Coins. Have Fun!</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-card">', unsafe_allow_html=True)
+        st.markdown('<div class="title">🎴 RUMMY</div>', unsafe_allow_html=True)
+        st.markdown('<div class="subtitle">Play with Friends. Win Coins!</div>', unsafe_allow_html=True)
         
         st.write("")
-        st.write("")
         
-        email = st.text_input("📧 Email", placeholder="your@email.com")
-        password = st.text_input("🔐 Password", type="password", placeholder="Enter password")
+        email = st.text_input("📧 Email Address", placeholder="your@email.com", key="email_input")
+        password = st.text_input("🔐 Password", type="password", placeholder="Enter password", key="pass_input")
+        
+        st.write("")
         
         col_login, col_signup = st.columns(2)
         
         with col_login:
-            if st.button("🔐 Sign In", use_container_width=True):
+            if st.button("🔐 Sign In", use_container_width=True, key="signin_btn"):
                 if email and password:
-                    # Demo login (in production, use actual Firebase auth)
                     st.session_state.user = {
                         "uid": email.split("@")[0],
                         "email": email,
-                        "name": email.split("@")[0],
+                        "name": email.split("@")[0].capitalize(),
                         "coins": 1000
                     }
                     st.session_state.page = "dashboard"
                     st.rerun()
                 else:
-                    st.error("Please enter email and password")
+                    st.error("Please enter both email and password")
         
         with col_signup:
-            if st.button("📝 Sign Up", use_container_width=True):
+            if st.button("📝 Sign Up", use_container_width=True, key="signup_btn"):
                 if email and password:
                     st.session_state.user = {
                         "uid": email.split("@")[0],
                         "email": email,
-                        "name": email.split("@")[0],
+                        "name": email.split("@")[0].capitalize(),
                         "coins": 1000
                     }
                     st.session_state.page = "dashboard"
                     st.rerun()
                 else:
-                    st.error("Please enter email and password")
+                    st.error("Please enter both email and password")
         
-        st.info("💡 Demo: Use any email and password to continue")
+        st.markdown('<div class="demo-note">💡 Demo Mode: Use any email and password to login. Start with 1000 coins!</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 def dashboard_page():
-    st.markdown("# 🎴 Rummy Card Game")
+    st.markdown("# 🎴 Rummy Card Game - Dashboard")
     
-    col1, col2, col3 = st.columns([3, 1, 1])
+    col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
     
     with col1:
-        pass
+        st.markdown(f"**Welcome, {st.session_state.user.get('name', 'Player')}!**")
     with col2:
-        st.metric("💰 Coins", st.session_state.user.get("coins", 1000))
+        st.metric("💰 Your Coins", st.session_state.user.get("coins", 1000))
     with col3:
-        if st.button("🚪 Logout"):
+        pass
+    with col4:
+        if st.button("🚪 Logout", use_container_width=True):
             st.session_state.user = None
             st.session_state.page = "login"
             st.rerun()
     
-    tab1, tab2, tab3 = st.tabs(["🎮 Game Lobby", "📊 Statistics", "⚙️ Settings"])
+    st.divider()
+    
+    tab1, tab2, tab3 = st.tabs(["🎮 GAME LOBBY", "📊 STATISTICS", "⚙️ SETTINGS"])
     
     with tab1:
         game_lobby_page()
     
     with tab2:
-        st.subheader("Your Statistics")
-        col1, col2, col3 = st.columns(3)
+        st.subheader("📈 Your Game Statistics")
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("Games Played", 5)
+            st.metric("Games Played", "5")
         with col2:
-            st.metric("Games Won", 2)
+            st.metric("Games Won", "2")
         with col3:
             st.metric("Win Rate", "40%")
+        with col4:
+            st.metric("Total Winnings", "250 coins")
     
     with tab3:
-        st.write("Settings coming soon...")
+        st.write("⚙️ Settings coming soon...")
+        st.write("- Sound preferences")
+        st.write("- Difficulty levels")
+        st.write("- Display options")
 
 def game_lobby_page():
-    st.markdown("### 🎮 Game Lobby")
+    st.markdown("### 🎮 Find or Create a Game")
     
     col1, col2, col3 = st.columns([2, 1, 1])
     
     with col1:
         st.write("")
     with col2:
-        if st.button("➕ Create Game", use_container_width=True):
+        if st.button("➕ CREATE NEW GAME", use_container_width=True, key="create_game_btn"):
             create_new_game()
     with col3:
-        if st.button("🔄 Refresh", use_container_width=True):
+        if st.button("🔄 REFRESH", use_container_width=True):
             st.rerun()
     
     st.write("")
@@ -161,28 +191,29 @@ def game_lobby_page():
         games_waiting = [g for g in st.session_state.games.values() if g['status'] == 'waiting']
         
         if games_waiting:
-            cols = st.columns(1)
-            for game in games_waiting:
-                with st.container():
-                    col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
-                    
-                    with col1:
-                        st.markdown(f"**🎴 Game #{game['game_id'][:8]}**")
-                    with col2:
-                        st.markdown(f"👥 {len(game['players'])}/6")
-                    with col3:
-                        st.markdown(f"💰 {game['entry_fee']} coins")
-                    with col4:
-                        st.markdown(f"⏱️ {game['created_at']}")
-                    with col5:
-                        if st.button("📍 Join", key=f"join_{game['game_id']}", use_container_width=True):
-                            join_game(game['game_id'])
-                    
-                    st.divider()
+            st.markdown("**💡 Available Games:**")
+            st.write("")
+            for idx, game in enumerate(games_waiting):
+                col1, col2, col3, col4, col5 = st.columns([2, 1, 1, 1, 1])
+                
+                with col1:
+                    st.markdown(f"### 🎴 Game #{game['game_id'][-4:]}")
+                with col2:
+                    st.markdown(f"### 👥 {len(game['players'])}/6 Players")
+                with col3:
+                    st.markdown(f"### 💰 {game['entry_fee']} coins")
+                with col4:
+                    created_time = game['created_at']
+                    st.markdown(f"### ⏱️ New")
+                with col5:
+                    if st.button("📍 JOIN", key=f"join_{game['game_id']}", use_container_width=True):
+                        join_game(game['game_id'])
+                
+                st.divider()
         else:
-            st.info("No games waiting for players. Create one to get started!")
+            st.markdown('<div class="game-card" style="text-align: center; padding: 40px;"><p style="font-size: 18px; color: #666;">No games waiting. Be the first to create one! 🎯</p></div>', unsafe_allow_html=True)
     else:
-        st.info("🎴 No games available yet. Create one to get started!")
+        st.markdown('<div class="game-card" style="text-align: center; padding: 40px;"><p style="font-size: 18px; color: #666;">No games available yet. Click <strong>CREATE NEW GAME</strong> to start! 🎯</p></div>', unsafe_allow_html=True)
 
 def create_new_game():
     game_id = f"game_{random.randint(10000, 99999)}"
