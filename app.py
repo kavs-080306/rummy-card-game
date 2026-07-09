@@ -225,7 +225,7 @@ def game_page():
     
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.markdown(f"## 🎴 Game #{game['game_id'][:8]}")
+        st.markdown(f"### 🎴 Rummy Game #{game['game_id'][-4:]}")
     with col2:
         if st.button("🚪 Exit Game", use_container_width=True):
             st.session_state.page = "dashboard"
@@ -234,44 +234,45 @@ def game_page():
     
     st.write("")
     
-    # Game board area
+    # Game board area - GREEN FELT TABLE
     st.markdown('<div class="game-board">', unsafe_allow_html=True)
     
     current_player = game['players'][game['current_player_index']]
-    st.markdown(f"### 📍 **{current_player['name']}'s Turn**")
-    st.write("")
+    st.markdown(f'<div class="board-title">🎯 {current_player["name"]} Playing</div>', unsafe_allow_html=True)
     
     board_col1, board_col2 = st.columns(2)
     
     with board_col1:
-        st.markdown("#### 📦 Draw Pile")
-        st.write("")
-        # Display deck back
+        st.markdown('<div class="pile-container">', unsafe_allow_html=True)
+        st.markdown('<div class="pile-label">📦 DRAW PILE</div>', unsafe_allow_html=True)
         display_card_back(len(game['deck']))
-        st.write(f"**{len(game['deck'])} cards remaining**")
+        st.markdown(f'<p style="color: #fff; text-align: center; margin-top: 10px; font-weight: bold;">{len(game["deck"])} cards</p>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
         if current_player['uid'] == st.session_state.user['uid']:
-            if st.button("🎴 Draw Card", use_container_width=True, key="draw_btn"):
+            st.write("")
+            if st.button("🎴 DRAW CARD", use_container_width=True, key="draw_btn"):
                 draw_card(game)
                 st.rerun()
         else:
-            st.info("⏳ Waiting for current player...")
+            st.write("")
+            st.info("⏳ Waiting for current player to draw...")
     
     with board_col2:
-        st.markdown("#### 💨 Discard Pile")
-        st.write("")
+        st.markdown('<div class="pile-container">', unsafe_allow_html=True)
+        st.markdown('<div class="pile-label">💨 DISCARD PILE</div>', unsafe_allow_html=True)
         if game['discard_pile']:
             last_card = game['discard_pile'][-1]
             display_playing_card(last_card, selected=False)
-            st.write(f"**{last_card.rank}{last_card.suit}**")
         else:
-            st.markdown('<div style="height: 140px; display: flex; align-items: center; justify-content: center; background-color: rgba(0,0,0,0.2); border-radius: 8px; border: 2px dashed #999;"><span style="color: #999; font-size: 18px;">Empty</span></div>', unsafe_allow_html=True)
+            st.markdown('<p style="color: #aaa; text-align: center; font-size: 18px; margin-top: 30px;">Empty</p>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
     st.write("")
     
     # Players info
-    st.markdown("### 👥 Players")
+    st.markdown('### 👥 Players in Game')
     cols = st.columns(len(game['players']))
     for idx, (col, player) in enumerate(zip(cols, game['players'])):
         with col:
@@ -281,28 +282,36 @@ def game_page():
     st.write("")
     
     # Your hand
-    st.markdown("### 🃏 Your Hand")
+    st.markdown('### 🃏 Your Hand')
     my_hand = game['players'][0].get('hand', []) if game['players'] else []
     
     if my_hand:
         st.markdown('<div class="hand-container">', unsafe_allow_html=True)
-        cols = st.columns(len(my_hand) if len(my_hand) <= 7 else 7)
-        for idx, (col, card) in enumerate(zip(cols, my_hand)):
-            with col:
-                display_playing_card(card, selected=False)
+        st.markdown('<div class="hand-title">Select cards to play</div>', unsafe_allow_html=True)
+        
+        # Display cards in rows
+        cards_per_row = 7
+        for i in range(0, len(my_hand), cards_per_row):
+            row_cards = my_hand[i:i + cards_per_row]
+            cols = st.columns(len(row_cards))
+            for col, card in zip(cols, row_cards):
+                with col:
+                    display_playing_card(card, selected=False)
+        
         st.markdown('</div>', unsafe_allow_html=True)
         
         if current_player['uid'] == st.session_state.user['uid']:
             st.write("")
+            st.write("**Your turn! Choose an action:**")
             action_col1, action_col2 = st.columns(2)
             with action_col1:
-                if st.button("✅ Play Cards", use_container_width=True):
-                    st.info("Select cards by clicking them")
+                if st.button("✅ PLAY SETS", use_container_width=True, key="play_btn"):
+                    st.info("🎯 Click cards to select them, then confirm")
             with action_col2:
-                if st.button("💨 Discard Card", use_container_width=True):
-                    st.info("Select 1 card to discard")
+                if st.button("💨 DISCARD CARD", use_container_width=True, key="discard_btn"):
+                    st.info("📌 Select 1 card to discard and end your turn")
     else:
-        st.info("No cards in hand yet. Draw a card to start!")
+        st.markdown('<div class="hand-container"><p style="color: #ffeb3b; text-align: center; font-size: 16px;">No cards yet. Draw a card to start playing!</p></div>', unsafe_allow_html=True)
 
 def generate_deck():
     suits = ["♠", "♥", "♦", "♣"]
