@@ -139,7 +139,7 @@ def login_page():
                         if new_username in GLOBAL_USERS:
                             st.error("⚠️ Username already taken! Please pick another configuration.")
                         else:
-                            # Set unique data with 5000 base currency initialization
+                            # FIXED: Save to the global registry FIRST so lobby_page can read it safely
                             GLOBAL_USERS[new_username] = {
                                 "password": new_password,
                                 "coins": 5000
@@ -152,7 +152,6 @@ def login_page():
                             st.session_state.page = "lobby"
                             st.success("Account created successfully!")
                             st.rerun()
-
 def lobby_page():
     # Sync visual metrics from the global multi-session cache layer
     with ROOM_LOCK:
